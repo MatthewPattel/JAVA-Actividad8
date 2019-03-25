@@ -25,9 +25,23 @@
     </jsp-property-group>
   </jsp-config>
   <!-- Escribe aquí tu código -->
- 
+  <filter-name>RateLimitFilter</filter-name>
+  <filter-class>me.jmll.filter.RateLimit</filter-class>
+  <init-param>
+  	<param-name>REQ_LIMIT</param-name>
+  	<param_value>5</param_value>
+  </init-param>
+  <init-param>
+  	<param-name>TIME_LIMIT</param-name>
+  	<param_value>15000</param_value>
+  </init-param>
   <!-- Escribe aquí tu código -->
   <filter>
+  <filter-mapping>
+  	<filter-name>RateLimitFilter</filter-name>
+  	<url-pattern>*.css</url-pattern>
+  </filter-mapping>
+  
     <filter-name>authorizationFilter</filter-name>
     <filter-class>me.jmll.filter.Authorization</filter-class>
   </filter>

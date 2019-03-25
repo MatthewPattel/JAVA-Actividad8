@@ -27,6 +27,21 @@ import org.apache.logging.log4j.Logger;
 public class RateLimit implements Filter {
 	// Escribe aquí tu código {
 
+	private static final Logger logger = LogManager.getLogger();
+	
+	private int req_limit = 5;
+	
+	private int rime_limit = 15000;
+	
+	final String REQ_LIMIT = "REQ_LIMIT";
+	
+	final String TIME_LIMIT = "TIME_LIMIT";
+	
+	private String XRATE_LIMIT = "X-RateLimit-Limit";
+	private String XRATE_LIMIT_REMAINING = "X_RateLimit-Remaining";
+	private String XRATE_LIMIT_RESET = "X-RateLimit-Reset";
+	
+	
     // }
     /**
      * Default constructor. 
@@ -48,7 +63,10 @@ public class RateLimit implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Hacer el casting de request y response a HttpServletRequest HttpServletResponse
     	// Escribe aquí tu código {
-
+    	
+    	HttpServletRequest req = (HttpServletRequest) request;
+    	HttpServletResponse res = (HttpServletResponse) response;
+    	
         // }
         // Obtener la sesión
         HttpSession session = req.getSession(true);
@@ -79,7 +97,9 @@ public class RateLimit implements Filter {
             // }
             if (elapsed < time_limit) {
             	// Escribe aquí tu código {
-                
+                res.addIntHeader(XRATE_LIMIT_RESET, time_limit);
+                res.setStatus(429);
+                res.setCharacterEncoding("UTF-8");
                 // }
                 // Mensaje
                 res.getWriter().write(String.format("Has alcanzado el máximo número"
@@ -96,7 +116,12 @@ public class RateLimit implements Filter {
     public void init(FilterConfig fConfig) throws ServletException {
         // Carga configuración de parámetros de inicio
     	// Escribe aquí tu código {
-
+    	
+    	
+    	req_limit = Integer.parseInt(fConfig.getInitParameter(REQ_LIMIT));
+    	time_limit = Integer.parseInt(fConfig.getInitParameter(TIME_LIMIT));
+    	
+    	
         // }
         logger.info("Iniciando {} con REQ_LIMIT={} TIME_LIMIT={}", RateLimit.class.getName(), req_limit, time_limit);
     }
